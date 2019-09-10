@@ -1,7 +1,7 @@
 package main
 
 import(
-	"github.com/vivevincere/auth-server"
+	"github.com/vivevincere/authserver"
   _ "github.com/go-sql-driver/mysql"
 	"database/sql"
 	"log"
