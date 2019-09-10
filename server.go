@@ -11,6 +11,13 @@ var SecretKey []byte
 var TbName string
 var Db *sql.DB
 
+func HomeHandler(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Reached Home")
+	w.Write([]byte("Home reached Successfully"))
+
+}
+
+
 func StartServer(SqlConnection *sql.DB, tableName string, secretKeyParam []byte, signup string, login string, base string) {
 	SecretKey = secretKeyParam
 	Db = SqlConnection
@@ -21,5 +28,6 @@ func StartServer(SqlConnection *sql.DB, tableName string, secretKeyParam []byte,
 
 	r.HandleFunc(signup, SignUpHandler)
 	r.HandleFunc(login, LoginHandler)
+	r.HandleFunc("/", HomeHandler)
 	http.ListenAndServe(base, r)
 }
