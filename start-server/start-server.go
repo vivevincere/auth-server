@@ -15,5 +15,5 @@ func main(){
 	if err != nil{
 		log.Fatal(err)
 	}
-	authServer.StartServer(Database, TableName, SecretKeyParam, "/signup", "/login", "localhost:8080")
+	authserver.StartServer(Database, TableName, SecretKeyParam, "/signup", "/login", "localhost:8080")
 }
