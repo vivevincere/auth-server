@@ -1,0 +1,13 @@
+version: '3'
+services:
+  goserver:
+   build: ./goserver
+   ports:
+    - "8080:8080"  
+
+  sqldb:
+   build: ./sqldb
+   environment: 
+      - MYSQL_ROOT_PASSWORD=password1
+   ports:
+     - "3306:3306"
