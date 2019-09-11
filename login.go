@@ -1,43 +1,40 @@
-package authServer
+package authserver
 
-import(
-	"net/http"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
-	"log"
+	"encoding/json"
 	"errors"
-	"golang.org/x/crypto/bcrypt"
-	"time"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
 )
 
-type LoginRequest struct{
+type LoginRequest struct {
 	Username string `json:username`
 	Password string `json:password`
 }
 
-
-
-func LoginHandler(w http.ResponseWriter, r *http.Request){
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var login LoginRequest
 	body, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(body, &login)
 	check := loginCheck(login.Username, login.Password)
-	if check != nil{
+	if check != nil {
 		http.Error(w, check.Error(), 400)
 		return
 	}
 	curTime := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"aud" : "fillwaud",
-		"exp" : curTime.Add(time.Hour * 3),
-
+		"aud": "fillwaud",
+		"exp": curTime.Add(time.Hour * 3),
 	})
 	tokenString, err := token.SignedString(SecretKey)
-	if err != nil{
+	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
@@ -51,26 +48,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	return
 }
 
-
-func loginCheck(user string, pass string) error{
+func loginCheck(user string, pass string) error {
 	stmtString := fmt.Sprintf("SELECT password FROM %s WHERE username = ?", TbName)
 	stmt, err := Db.Prepare(stmtString)
 	defer stmt.Close()
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	row := stmt.QueryRow(user)
 	var s []byte
 	noRowCheck := row.Scan(&s)
-	if noRowCheck == sql.ErrNoRows{
+	if noRowCheck == sql.ErrNoRows {
 		return errors.New("Invalid username/password")
 	}
 	err = bcrypt.CompareHashAndPassword(s, []byte(pass))
-	if err != nil{
+	if err != nil {
 		fmt.Println(err.Error())
 		return errors.New("Invalid username/password1")
 	}
 	return nil
-
 
 }
