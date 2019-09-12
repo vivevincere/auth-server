@@ -18,9 +18,8 @@ func main(){
 	if err != nil{
 		log.Fatal(err)
 	}
-	err = Database.Ping()
 	timer := 0
-	for err =Database.Ping();err != nil{
+	for err =Database.Ping();err != nil;{
 		time.Sleep(5 * time.Second)
 		timer = timer + 5
 		if timer > 30{
